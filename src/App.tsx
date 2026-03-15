@@ -1,15 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from 'react'
+// Tell TypeScript to ignore the missing declaration for this JS module.
+// Consider adding a ./components/Navbar/Navbar.d.ts file later for proper types.
+// @ts-ignore
+import Navbar from './components/Navbar/Navbar'
 
-function App() {
+const App = () => {
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<h1>Dashboard</h1>} />
-        <Route path="/log" element={<h1>Log Meal</h1>} />
-        <Route path="/history" element={<h1>History</h1>} />
-      </Routes>
-    </BrowserRouter>
-  );
+    <div className = 'container'>
+      <Navbar />
+    </div>
+  )
 }
 
-export default App;
+export default App
+
