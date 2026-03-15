@@ -1,18 +1,36 @@
+import { Link, useLocation } from 'react-router-dom'
 import './Sidebar.css'
 
 const Sidebar = () => {
+  const location = useLocation()
+
+  const navLinks = [
+    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/log-meal', label: 'Log Meal', icon: '🍽️' },
+    { path: '/history', label: 'History', icon: '📅' },
+  ]
+
+  const isActive = (path: string) => location.pathname === path
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <h2>Menu</h2>
+        <h2>🍽️ Menu</h2>
       </div>
 
       <nav className="sidebar-nav">
         <ul>
-          <li><a href="#dashboard" className="nav-link">Dashboard</a></li>
-          <li><a href="#meal-log" className="nav-link">Meal Log</a></li>
-          <li><a href="#history" className="nav-link">History</a></li>
-          <li><a href="#settings" className="nav-link">Settings</a></li>
+          {navLinks.map((link) => (
+            <li key={link.path}>
+              <Link
+                to={link.path}
+                className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
+              >
+                <span className="nav-icon">{link.icon}</span>
+                <span className="nav-label">{link.label}</span>
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
 
