@@ -1,0 +1,107 @@
+.meal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  background: rgba(86, 119, 50, 0.02);
+  border-radius: 8px;
+  border-left: 3px solid #567732;
+  transition: all 0.2s ease;
+}
+
+.meal-item:hover {
+  background: rgba(86, 119, 50, 0.05);
+  transform: translateX(4px);
+}
+
+.meal-info {
+  flex: 1;
+}
+
+.meal-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.meal-time {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.85rem;
+  color: #95a5a6;
+}
+
+.meal-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meal-calories {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #567732;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.meal-delete-btn {
+  background: #fee;
+  border: 1px solid #f5c6c6;
+  color: #e74c3c;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.meal-delete-btn:hover {
+  background: #f5c6c6;
+  border-color: #e74c3c;
+  transform: scale(1.05);
+}
+
+.meal-delete-btn:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .meal-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .meal-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .meal-calories {
+    text-align: right;
+  }
+}
+
+@media (max-width: 480px) {
+  .meal-item {
+    padding: 1rem;
+  }
+
+  .meal-name {
+    font-size: 0.95rem;
+  }
+
+  .meal-delete-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+}

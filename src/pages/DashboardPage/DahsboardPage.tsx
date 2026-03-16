@@ -6,8 +6,9 @@
  * HOW: 
  * - Uses React functional component pattern
  * - Renders the PageWrapper component for consistent page layout
- * - Displays 4 stat cards with progress bars (Calories, Protein, Carbs, Fat)
- * - Shows recent meals in a list format below the stats
+ * - Displays CalorieSummaryCard and MacroProgressBar components for nutrition tracking
+ * - Shows MealLogForm for adding new meals
+ * - Displays recent meals using MealListItem components
  * - Uses inline styles for dynamic progress bar widths
  * 
  * TECH STACK:
@@ -17,12 +18,79 @@
  * - React Functional Components - Modern React approach
  */
 
+import { useState } from 'react'
 import PageWrapper from '../../components/PageWrapper/PageWrapper'
+import CalorieSummaryCard from '../../components/CalorieSummaryCard/CalorieSummaryCard'
+import MacroProgressBar from '../../components/MacroProgressBar/MacroProgressBar'
+import MealLogForm from '../../components/MealLogForm/MealLogForm'
+import MealListItem from '../../components/MealListItem/MealListItem'
+import type { MealLog } from '../../components/MealLogForm/MealLogForm'
 import './DashboardPage.css'
 
+interface Meal extends MealLog {
+  id: string
+  mealType: string
+  time: string
+}
+
 const DashboardPage = () => {
-  // Component return - renders the page content wrapped with PageWrapper
-  // PageWrapper provides consistent header styling and page wrapper functionality
+  // Sample initial data - could be replaced with API calls
+  const [meals, setMeals] = useState<Meal[]>([
+    {
+      id: '1',
+      foodName: 'Chicken Salad',
+      quantity: 300,
+      calories: 450,
+      mealType: 'Lunch',
+      time: '12:30 PM',
+    },
+    {
+      id: '2',
+      foodName: 'Oatmeal with Berries',
+      quantity: 200,
+      calories: 320,
+      mealType: 'Breakfast',
+      time: '8:00 AM',
+    },
+    {
+      id: '3',
+      foodName: 'Apple & Almonds',
+      quantity: 150,
+      calories: 180,
+      mealType: 'Snack',
+      time: '3:00 PM',
+    },
+  ])
+
+  // Nutrition goals
+  const CALORIE_GOAL = 2000
+  const PROTEIN_GOAL = 150
+  const CARBS_GOAL = 250
+  const FAT_GOAL = 65
+
+  // Calculate totals from meals
+  const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0)
+  const remainingCalories = CALORIE_GOAL - totalCalories
+
+  // Handle adding a new meal
+  const handleAddMeal = (newMeal: MealLog) => {
+    const meal: Meal = {
+      ...newMeal,
+      id: Date.now().toString(),
+      mealType: 'Logged',
+      time: new Date().toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+      }),
+    }
+    setMeals([meal, ...meals])
+  }
+
+  // Handle deleting a meal
+  const handleDeleteMeal = (id: string) => {
+    setMeals(meals.filter((meal) => meal.id !== id))
+  }
+
   return (
     <PageWrapper
       title="Dashboard"
@@ -30,106 +98,71 @@ const DashboardPage = () => {
       icon="📊"
     >
       {/* 
-        Dashboard Grid Section - Displays 4 nutritional stat cards
+        Dashboard Grid Section - Displays nutrition summary and macro progress cards
         Uses CSS Grid for responsive layout (auto-fit columns with min-width 280px)
-        Each card shows current intake, goal target, and visual progress bar
       */}
       <div className="dashboard-grid">
-        {/* Calorie Intake Card - Primary nutrition metric */}
-        <div className="stat-card">
-          <div className="stat-header">
-            <h3>Today's Intake</h3>
-            <span className="stat-badge">Goal: 2000 kcal</span>
-          </div>
-          {/* stat-value: Displays current calorie count in large font */}
-          <p className="stat-value">1,250 kcal</p>
-          {/* Progress bar: Visual representation of progress towards goal
-              - Uses inline style with width property for dynamic percentage (62.5%)
-              - CSS provides colors and styling for bar appearance */}
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: '62.5%' }}></div>
-          </div>
-          {/* Remaining calories calculation for user awareness */}
-          <p className="stat-remaining">750 kcal remaining</p>
-        </div>
+        {/* Calorie Summary Card - Primary nutrition metric */}
+        <CalorieSummaryCard
+          eaten={totalCalories}
+          goal={CALORIE_GOAL}
+          remaining={remainingCalories}
+        />
 
-        {/* Protein Card - Macronutrient tracking (blue themed) */}
-        <div className="stat-card">
-          <div className="stat-header">
-            <h3>Protein</h3>
-            <span className="stat-badge">Target: 150g</span>
-          </div>
-          <p className="stat-value">78g</p>
-          {/* Progress bar with 'protein' class modifier for blue color scheme */}
-          <div className="progress-bar protein">
-            <div className="progress-fill" style={{ width: '52%' }}></div>
-          </div>
-          <p className="stat-remaining">72g remaining</p>
-        </div>
-
-        {/* Carbohydrates Card - Macronutrient tracking (orange themed) */}
-        <div className="stat-card">
-          <div className="stat-header">
-            <h3>Carbs</h3>
-            <span className="stat-badge">Target: 250g</span>
-          </div>
-          <p className="stat-value">145g</p>
-          {/* Progress bar with 'carbs' class modifier for orange color scheme */}
-          <div className="progress-bar carbs">
-            <div className="progress-fill" style={{ width: '58%' }}></div>
-          </div>
-          <p className="stat-remaining">105g remaining</p>
-        </div>
-
-        {/* Fat Card - Macronutrient tracking (red themed) */}
-        <div className="stat-card">
-          <div className="stat-header">
-            <h3>Fat</h3>
-            <span className="stat-badge">Target: 65g</span>
-          </div>
-          <p className="stat-value">32g</p>
-          {/* Progress bar with 'fat' class modifier for red color scheme */}
-          <div className="progress-bar fat">
-            <div className="progress-fill" style={{ width: '49%' }}></div>
-          </div>
-          <p className="stat-remaining">33g remaining</p>
-        </div>
+        {/* Macro Progress Cards - Protein, Carbs, Fat tracking */}
+        <MacroProgressBar
+          name="Protein"
+          current={78}
+          goal={PROTEIN_GOAL}
+          unit="g"
+          color="protein"
+        />
+        <MacroProgressBar
+          name="Carbs"
+          current={145}
+          goal={CARBS_GOAL}
+          unit="g"
+          color="carbs"
+        />
+        <MacroProgressBar
+          name="Fat"
+          current={32}
+          goal={FAT_GOAL}
+          unit="g"
+          color="fat"
+        />
       </div>
 
       {/* 
+        Meal Log Form Section - Allows users to log new meals
+        Positioned before the meal list so newly added meals appear at the top
+      */}
+      <MealLogForm onSubmit={handleAddMeal} />
+
+      {/* 
         Recent Meals Section - Shows user's meal history for the current day
-        Displays meal name, time, and calorie count in a vertical list
-        Used for quick reference of logged meals
+        Uses MealListItem component for each meal entry
       */}
       <div className="recent-meals">
         <h2>Recent Meals</h2>
         <div className="meals-list">
-          {/* Meal Entry 1: Chicken Salad - Lunch example */}
-          <div className="meal-item">
-            <div className="meal-info">
-              <p className="meal-name">Chicken Salad</p>
-              <p className="meal-time">Lunch · 12:30 PM</p>
+          {meals.length > 0 ? (
+            meals.map((meal) => (
+              <MealListItem
+                key={meal.id}
+                id={meal.id}
+                foodName={meal.foodName}
+                mealType={meal.mealType}
+                time={meal.time}
+                calories={meal.calories}
+                onDelete={handleDeleteMeal}
+              />
+            ))
+          ) : (
+            <div className="no-meals-message">
+              <p>No meals logged yet. Add a meal to get started!</p>
             </div>
-            <p className="meal-calories">450 kcal</p>
-          </div>
-
-          {/* Meal Entry 2: Oatmeal with Berries - Breakfast example */}
-          <div className="meal-item">
-            <div className="meal-info">
-              <p className="meal-name">Oatmeal with Berries</p>
-              <p className="meal-time">Breakfast · 8:00 AM</p>
-            </div>
-            <p className="meal-calories">320 kcal</p>
-          </div>
-
-          {/* Meal Entry 3: Apple & Almonds - Snack example */}
-          <div className="meal-item">
-            <div className="meal-info">
-              <p className="meal-name">Apple & Almonds</p>
-              <p className="meal-time">Snack · 3:00 PM</p>
-            </div>
-            <p className="meal-calories">180 kcal</p>
-          </div>
+          )}
         </div>
       </div>
     </PageWrapper>
